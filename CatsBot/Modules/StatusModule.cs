@@ -13,18 +13,18 @@ namespace CatsBot.Modules
     {
         [SlashCommand("status", "Status d'un serveur gmod")]
         [RequireUserPermission(GuildPermission.Administrator)]
-        public async Task Status(string ip, ushort port = 27015)
+        public async Task Status(string ip, ushort portOui = 27015)
         {
             await DeferAsync(); // Préviens Discord que le bot travaille sur la réponse
             try
             {
-                var server = new GameServer($"{ip}:{port}");
+                var server = new GameServer($"{ip}:{portOui}");
                 await server.PerformQueryAsync();
 
                 var pingResult = await GetPingAsync(ip);
 
                 var embed = new EmbedBuilder()
-                    .WithTitle($"**Serveur GMod - {ip}:{port}**")
+                    .WithTitle($"**Serveur GMod - {ip}:{portOui}**")
                     .WithColor(Color.Green)  // Couleur de l'embed (barre latérale)
                     .AddField("Nom du serveur", server.Information.ServerName, true)  // Texte en gras
                     .AddField("Ping", "*50ms*", true)  // Texte en italique
@@ -75,7 +75,7 @@ namespace CatsBot.Modules
             {
                 if(ex.Message == "Hôte inconnu.")
                 {
-                    await FollowupAsync($"❌ Impossible de se connecter au serveur {ip}:{port}\nErreur: {ex.Message}");
+                    await FollowupAsync($"❌ Impossible de se connecter au serveur {ip}:{portOui}\nErreur: {ex.Message}");
                 }
             }
         }

@@ -16,19 +16,15 @@ namespace CatsBot.Services
         private readonly DiscordSocketClient _discord;
         private readonly InteractionService _interactions;
         private readonly IServiceProvider _services;
-        private readonly IConfiguration _config;
 
         public InteractionHandlingService(
             DiscordSocketClient discord,
             InteractionService interactions,
-            IServiceProvider services,
-            IConfiguration config,
-            ILogger<InteractionService> logger)
+            IServiceProvider services)
         {
             _discord = discord;
             _interactions = interactions;
             _services = services;
-            _config = config;
         }
 
         public async Task StartAsync(CancellationToken cancellationToken)

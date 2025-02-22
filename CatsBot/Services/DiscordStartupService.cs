@@ -1,12 +1,17 @@
 ﻿using CatsBot.Modules;
 using Discord;
 using Discord.Interactions;
+using Discord.Net;
 using Discord.WebSocket;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using MySqlX.XDevAPI;
+using Newtonsoft.Json;
 using System;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace CatsBot.Services
 {
@@ -36,25 +41,24 @@ namespace CatsBot.Services
 
             _discord.Ready += async () =>
             {
-                // Empêche de réenregistrer les commandes à chaque démarrage
-                if (!_commandsRegistered)
+                ulong guildId = 0; // Remplace par ton Guild ID
+
+                var _interactionService = new InteractionService(_discord);
+                await _interactionService.AddModulesAsync(Assembly.GetEntryAssembly(), _services);
+                await _interactionService.RegisterCommandsToGuildAsync(guildId);
+
+                _discord.InteractionCreated += async interaction =>
                 {
-                    ulong guildId = 0; // Remplace par ton Guild ID
+                    var scope = _services.CreateScope();
+                    var ctx = new SocketInteractionContext(_discord, interaction);
+                    await _interactionService.ExecuteCommandAsync(ctx, scope.ServiceProvider);
+                };
 
-                    // Supprime et recharge les modules pour éviter les doublons
-                    await _commands.RemoveModuleAsync(typeof(StatusModule));
-                    await _commands.AddModulesAsync(Assembly.GetEntryAssembly(), _services);
+                _commandsRegistered = true;  // Marque les commandes comme enregistrées
 
-                    // Enregistrement des commandes pour le serveur (immédiat)
-                    
-
-                    _commandsRegistered = true;  // Marque les commandes comme enregistrées
-
-                    Console.WriteLine("✅ Les slash commands sont enregistrées !");
-                }
+                Console.WriteLine("✅ Les slash commands sont enregistrées !");
             };
         }
-
         // Gestion des interactions
         private async Task HandleInteractionAsync(SocketInteraction interaction)
         {

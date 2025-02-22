@@ -6,3 +6,7 @@
 .vs/CatsBot/FileContentIndex/
 
 .vs/CatsBot/DesignTimeBuild/
+
+CatsBot/obj/
+
+CatsBot/bin/Debug/net8.0/
